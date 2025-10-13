@@ -60,6 +60,14 @@ namespace QueryDocs.API
                         new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
                 });
                 builder.Services.AddScoped<IHuggingFaceService, HuggingFaceService>();
+                builder.Services.Configure<OpenRouterSettings>(builder.Configuration.GetSection("OpenRouter"));
+                builder.Services.AddHttpClient("OpenRouterClient", (sp, client) =>
+                {
+                    var settings = sp.GetRequiredService<IOptions<OpenRouterSettings>>().Value;
+                    client.BaseAddress = new Uri(settings.BaseUrl);
+                    client.DefaultRequestHeaders.Accept.Add(
+                        new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+                });
                 builder.Services.AddHttpContextAccessor();
 
                 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
