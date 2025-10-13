@@ -20,7 +20,7 @@ namespace QueryDocs.Services.DocumentServices
             this.openAiService = openAiService; 
         }
 
-        public async Task<ServiceResult> ProcessDocument(IFormFile file)
+        public async Task<ServiceResult> ProcessDocument(IFormFile file, int userId)
         {
             var result = new ServiceResult();
             var text = await ExtractText(file);
@@ -51,7 +51,7 @@ namespace QueryDocs.Services.DocumentServices
                     }
                     else
                     {
-                        await pineconeService.UpsertEmbeddingsAsync(embeddingChunks, file.FileName);
+                        await pineconeService.UpsertEmbeddingsAsync(embeddingChunks, file.FileName, userId);
 
                         result.SetSuccess($"Stored {embeddingChunks.Count} embeddings in Pinecone for {file.FileName}");
                     }

@@ -9,7 +9,6 @@ using QueryDocs.Domain.Models;
 using QueryDocs.Infrastructure.DbContexts;
 using QueryDocs.Infrastructure.ResponseHelpers;
 using QueryDocs.Services.OpenAIServices;
-using System.Security.Claims;
 
 
 namespace QueryDocs.Services.PineconeServices
@@ -17,24 +16,20 @@ namespace QueryDocs.Services.PineconeServices
     public class PineconeService : IPineconeService
     {
         private readonly ChatDbContext dbContext;
-        private readonly IHttpContextAccessor httpContextAccessor;
         private readonly PineconeClient pineconeClient;
         private readonly IOpenAIService openAiService;
         private readonly PineconeSettings pineconeSettings;
 
-        public PineconeService(IOptions<PineconeSettings> pineconeSettings, IHttpContextAccessor httpContextAccessor, OpenAIClient openAiClient, IOpenAIService openAiService, IOptions<OpenAISettings> openAiSettings, PineconeClient pineconeClient, ChatDbContext dbContext)
+        public PineconeService(IOptions<PineconeSettings> pineconeSettings, OpenAIClient openAiClient, IOpenAIService openAiService, IOptions<OpenAISettings> openAiSettings, PineconeClient pineconeClient, ChatDbContext dbContext)
         {
             this.pineconeClient = pineconeClient;
             this.pineconeSettings = pineconeSettings.Value;
-            this.httpContextAccessor = httpContextAccessor;
             this.openAiService = openAiService;
             this.dbContext = dbContext;
         }
 
-        public async Task UpsertEmbeddingsAsync(List<EmbeddingChunk> embeddingChunks, string fileName)
+        public async Task UpsertEmbeddingsAsync(List<EmbeddingChunk> embeddingChunks, string fileName, int userId)
         {
-            var userId = httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier) ?? "anonymous";
-
             var index = await pineconeClient.GetIndex(pineconeSettings.Index);
 
             var filter = new MetadataMap
@@ -60,10 +55,9 @@ namespace QueryDocs.Services.PineconeServices
             await index.Upsert(vectors);
         }
 
-        public async Task<ServiceResult> GenerateAnswer(QueryRequest query)
+        public async Task<ServiceResult> GenerateAnswer(QueryRequest query,int userId)
         {
             var result = new ServiceResult();
-            var userId = Convert.ToInt32(httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value);
 
             var index = await pineconeClient.GetIndex(pineconeSettings.Index);
             var queryVector = await openAiService.CreateEmbeddings(query.Query);

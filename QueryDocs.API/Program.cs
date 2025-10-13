@@ -14,6 +14,7 @@ using QueryDocs.Services.DocumentServices;
 using QueryDocs.Services.JwtTokenServices;
 using QueryDocs.Services.OpenAIServices;
 using QueryDocs.Services.PineconeServices;
+using QueryDocs.Services.UserServices;
 using System.Text;
 
 namespace QueryDocs.API
@@ -30,6 +31,7 @@ namespace QueryDocs.API
                 builder.Services.AddDbContext<ChatDbContext>(options =>
                     options.UseSqlServer(builder.Configuration.GetConnectionString("dbcs")));
                 builder.Services.AddScoped<IAuthService, AuthService>();
+                builder.Services.AddScoped<IUserService, UserService>();
                 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
                 builder.Services.AddScoped<PasswordHasher<User>>();
                 builder.Services.AddScoped<IPineconeService, PineconeService>();
