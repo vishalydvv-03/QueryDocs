@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "Tvgn++E8JVs=",
+  "dgSpecHash": "RLpDM8jtRPI=",
   "success": true,
   "projectFilePath": "C:\\Users\\Nimap\\Desktop\\QueryDocs\\QueryDocs.API\\QueryDocs.API.csproj",
   "expectedPackageFiles": [
@@ -75,6 +75,7 @@
     "C:\\Users\\Nimap\\.nuget\\packages\\pinecone.net\\3.0.0\\pinecone.net.3.0.0.nupkg.sha512",
     "C:\\Users\\Nimap\\.nuget\\packages\\std.uritemplate\\2.0.1\\std.uritemplate.2.0.1.nupkg.sha512",
     "C:\\Users\\Nimap\\.nuget\\packages\\swashbuckle.aspnetcore\\6.6.2\\swashbuckle.aspnetcore.6.6.2.nupkg.sha512",
+    "C:\\Users\\Nimap\\.nuget\\packages\\swashbuckle.aspnetcore.annotations\\6.6.2\\swashbuckle.aspnetcore.annotations.6.6.2.nupkg.sha512",
     "C:\\Users\\Nimap\\.nuget\\packages\\swashbuckle.aspnetcore.swagger\\6.6.2\\swashbuckle.aspnetcore.swagger.6.6.2.nupkg.sha512",
     "C:\\Users\\Nimap\\.nuget\\packages\\swashbuckle.aspnetcore.swaggergen\\6.6.2\\swashbuckle.aspnetcore.swaggergen.6.6.2.nupkg.sha512",
     "C:\\Users\\Nimap\\.nuget\\packages\\swashbuckle.aspnetcore.swaggerui\\6.6.2\\swashbuckle.aspnetcore.swaggerui.6.6.2.nupkg.sha512",

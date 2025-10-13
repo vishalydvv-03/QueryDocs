@@ -250,7 +250,9 @@
           },
           "password": {
             "minLength": 1,
-            "type": "string"
+            "type": "string",
+            "description": "User password",
+            "format": "password"
           }
         },
         "additionalProperties": false
@@ -276,6 +278,8 @@
           },
           "password": {
             "type": "string",
+            "description": "User Password",
+            "format": "password",
             "nullable": true
           },
           "contactNo": {
