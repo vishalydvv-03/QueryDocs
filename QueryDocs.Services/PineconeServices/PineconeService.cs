@@ -8,7 +8,9 @@ using QueryDocs.Domain.Entities;
 using QueryDocs.Domain.Models;
 using QueryDocs.Infrastructure.DbContexts;
 using QueryDocs.Infrastructure.ResponseHelpers;
+using QueryDocs.Services.HuggingFaceServices;
 using QueryDocs.Services.OpenAIServices;
+
 
 
 namespace QueryDocs.Services.PineconeServices
@@ -17,13 +19,15 @@ namespace QueryDocs.Services.PineconeServices
     {
         private readonly ChatDbContext dbContext;
         private readonly PineconeClient pineconeClient;
+        private readonly IHuggingFaceService hfService;
         private readonly IOpenAIService openAiService;
         private readonly PineconeSettings pineconeSettings;
 
-        public PineconeService(IOptions<PineconeSettings> pineconeSettings, OpenAIClient openAiClient, IOpenAIService openAiService, IOptions<OpenAISettings> openAiSettings, PineconeClient pineconeClient, ChatDbContext dbContext)
+        public PineconeService(IOptions<PineconeSettings> pineconeSettings, OpenAIClient openAiClient, IHuggingFaceService hfService, IOpenAIService openAiService, IOptions<OpenAISettings> openAiSettings, PineconeClient pineconeClient, ChatDbContext dbContext)
         {
             this.pineconeClient = pineconeClient;
             this.pineconeSettings = pineconeSettings.Value;
+            this.hfService = hfService;
             this.openAiService = openAiService;
             this.dbContext = dbContext;
         }
@@ -32,11 +36,6 @@ namespace QueryDocs.Services.PineconeServices
         {
             var index = await pineconeClient.GetIndex(pineconeSettings.Index);
 
-            var filter = new MetadataMap
-            {
-                ["user"] = userId
-            };
-            await index.Delete(filter);
             var uniqueId = Guid.NewGuid();
 
             var vectors = embeddingChunks.Select((chunk, i) => new Vector
@@ -60,7 +59,7 @@ namespace QueryDocs.Services.PineconeServices
             var result = new ServiceResult();
 
             var index = await pineconeClient.GetIndex(pineconeSettings.Index);
-            var queryVector = await openAiService.CreateEmbeddings(query.Query);
+            var queryVector = await hfService.CreateEmbeddingsFromHuggingFace(query.Query);
 
             var searchFilter = new MetadataMap
             {
