@@ -41,14 +41,14 @@ namespace QueryDocs.Services.DocumentServices
 
                     foreach (var chunk in chunks)
                     {
-                        //var vector = await openAiService.CreateEmbeddingsFromOpenAI(chunk);
+                        //var vector = await openAiService.CreateEmbeddingsFromOpenAI(chunk);  
                         var vector = await hfService.CreateEmbeddingsFromHuggingFace(chunk);
                         embeddingChunks.Add(new EmbeddingChunk(vector, chunk));
                     }
 
                     if (embeddingChunks == null || embeddingChunks.Count == 0)
                     {
-                        result.SetFailure("OpenAI API returned no embeddings.");
+                        result.SetFailure("API returned no embeddings.");
                     }
                     else
                     {
@@ -103,7 +103,7 @@ namespace QueryDocs.Services.DocumentServices
             return text;
         }
 
-        private List<string> ChunkText(string text, int chunkSize = 1000, int overlap = 200)
+        private List<string> ChunkText(string text, int chunkSize = 500, int overlap = 200)
         {
             var chunks = new List<string>();
 

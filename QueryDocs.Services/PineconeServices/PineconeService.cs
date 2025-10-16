@@ -10,6 +10,7 @@ using QueryDocs.Infrastructure.DbContexts;
 using QueryDocs.Infrastructure.ResponseHelpers;
 using QueryDocs.Services.HuggingFaceServices;
 using QueryDocs.Services.OpenAIServices;
+using QueryDocs.Services.OpenRouterServices;
 
 
 
@@ -21,14 +22,16 @@ namespace QueryDocs.Services.PineconeServices
         private readonly PineconeClient pineconeClient;
         private readonly IHuggingFaceService hfService;
         private readonly IOpenAIService openAiService;
+        private readonly IOpenRouterService openRouterService;
         private readonly PineconeSettings pineconeSettings;
 
-        public PineconeService(IOptions<PineconeSettings> pineconeSettings, OpenAIClient openAiClient, IHuggingFaceService hfService, IOpenAIService openAiService, IOptions<OpenAISettings> openAiSettings, PineconeClient pineconeClient, ChatDbContext dbContext)
+        public PineconeService(IOptions<PineconeSettings> pineconeSettings, OpenAIClient openAiClient, IHuggingFaceService hfService, IOpenAIService openAiService, IOpenRouterService openRouterService, IOptions<OpenAISettings> openAiSettings, PineconeClient pineconeClient, ChatDbContext dbContext)
         {
             this.pineconeClient = pineconeClient;
             this.pineconeSettings = pineconeSettings.Value;
             this.hfService = hfService;
             this.openAiService = openAiService;
+            this.openRouterService = openRouterService;
             this.dbContext = dbContext;
         }
 
@@ -36,15 +39,29 @@ namespace QueryDocs.Services.PineconeServices
         {
             var index = await pineconeClient.GetIndex(pineconeSettings.Index);
 
-            var uniqueId = Guid.NewGuid();
+            var vectorId = $"{userId}-{fileName}-0";
+
+            var queryResult = await index.Query(vectorId, topK: 1);
+
+            if (queryResult.Any())
+            {
+                var searchFilter = new MetadataMap
+                {
+                    ["user"] = new MetadataMap
+                    {
+                        ["$eq"] = userId.ToString()
+                    }
+                };
+                await index.Delete(filter: searchFilter);
+            }
 
             var vectors = embeddingChunks.Select((chunk, i) => new Vector
             {
-                Id = $"{userId}-{fileName}-{i}-{uniqueId}",
+                Id = vectorId,
                 Values = chunk.Vector,
                 Metadata = new MetadataMap
                 {
-                    ["user"] = userId,
+                    ["user"] = userId.ToString(),
                     ["file_name"] = fileName,
                     ["original_text"] = chunk.ChunkText,
                     ["uploaded_at"] = DateTime.UtcNow.ToString("o")
@@ -69,6 +86,8 @@ namespace QueryDocs.Services.PineconeServices
                 }
             };
 
+
+
             var searchResult = await index.Query(queryVector, topK: Convert.ToUInt32(query.TopK), includeMetadata: true, filter: searchFilter);
 
             if (searchResult.Length == 0)
@@ -91,7 +110,7 @@ namespace QueryDocs.Services.PineconeServices
 
                 var history = string.Join("\n", previousChats.Select(c => $"UserQuery: {c.Query}\nBotReponse: {c.Response}\n"));
 
-                var systemMessage = ChatMessage.CreateSystemMessage(@"
+                var systemMessage = @"
                     You are a helpful, friendly, and professional AI assistant. 
                     Your goal is to provide accurate, concise, and context-aware responses in a human friendly way.
 
@@ -102,27 +121,29 @@ namespace QueryDocs.Services.PineconeServices
                     - Start with a simple explanation before adding technical depth and keep it short and concise.
                     - Use only the information from the provided context or previous conversation.
                     - Never fabricate or assume facts not found in the given data.
-                    - When the question refers to past conversation, incorporate the relevant history into your answer."
-                );
+                    - When the question refers to past conversation, incorporate the relevant history into your answer.";
 
-                var userMessage = ChatMessage.CreateUserMessage($@"
+
+
+                var userMessage = $@"
                     Previous conversation: {history}
                     Context from documents: {context}
                     New question: {query.Query}
-                    Answer:"
-                );
+                    Answer:";
+                
 
-                var messages = new List<ChatMessage>
-                {
-                    systemMessage,
-                    userMessage
-                };
+                //var messages = new List<ChatMessage>
+                //{
+                //    systemMessage,
+                //    userMessage
+                //};
 
-                var chatClient = openAiService.GetChatClient();
+                //var chatClient = openAiService.GetChatClient();
 
-                ChatCompletion completion = await chatClient.CompleteChatAsync(messages);
-                string answer = completion.Content[0].Text;
+                //ChatCompletion completion = await chatClient.CompleteChatAsync(messages);
+                //string answer = completion.Content[0].Text;
 
+                var answer = await openRouterService.CompleteChat($"{systemMessage}\n{userMessage}") ?? string.Empty;
                 var log = new ChatLog
                 {
                     Query = query.Query,

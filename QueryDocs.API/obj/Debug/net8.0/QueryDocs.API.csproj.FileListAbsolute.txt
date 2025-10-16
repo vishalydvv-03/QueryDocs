@@ -560,3 +560,4 @@ C:\Users\Nimap\Desktop\QueryDocs\QueryDocs.API\obj\Debug\net8.0\QueryDocs.API.pd
 C:\Users\Nimap\Desktop\QueryDocs\QueryDocs.API\obj\Debug\net8.0\QueryDocs.API.genruntimeconfig.cache
 C:\Users\Nimap\Desktop\QueryDocs\QueryDocs.API\obj\Debug\net8.0\ref\QueryDocs.API.dll
 C:\Users\Nimap\Desktop\QueryDocs\QueryDocs.API\bin\Debug\net8.0\Swashbuckle.AspNetCore.Annotations.dll
+C:\Users\visha\source\repos\QueryDocs\QueryDocs.API\bin\Debug\net8.0\Swashbuckle.AspNetCore.Annotations.dll

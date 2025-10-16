@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("QueryDocs.Services")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+efd08cd3a486ffe6ed70d68e5ac382b29e21b3e1")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3128f8a0f188e523a89910d4763435e916476576")]
 [assembly: System.Reflection.AssemblyProductAttribute("QueryDocs.Services")]
 [assembly: System.Reflection.AssemblyTitleAttribute("QueryDocs.Services")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

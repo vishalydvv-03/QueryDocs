@@ -14,6 +14,7 @@ using QueryDocs.Services.DocumentServices;
 using QueryDocs.Services.HuggingFaceServices;
 using QueryDocs.Services.JwtTokenServices;
 using QueryDocs.Services.OpenAIServices;
+using QueryDocs.Services.OpenRouterServices;
 using QueryDocs.Services.PineconeServices;
 using QueryDocs.Services.UserServices;
 using System.Text;
@@ -68,6 +69,7 @@ namespace QueryDocs.API
                     client.DefaultRequestHeaders.Accept.Add(
                         new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
                 });
+                builder.Services.AddScoped<IOpenRouterService, OpenRouterService>();
                 builder.Services.AddHttpContextAccessor();
 
                 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
